@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Music Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input { padding: 10px; width: 80%; margin-bottom: 10px; }
+        button { padding: 10px; }
+        .video { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>YouTube Music Search</h1>
+    <input type="text" id="searchQuery" placeholder="Search for music...">
+    <button onclick="searchMusic()">Search</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function searchMusic() {
+            let query = document.getElementById("searchQuery").value;
+            if (!query) return alert("Please enter a search term!");
+
+            let response = await fetch(`http://localhost:8000/search?query=${query}`);
+            let data = await response.json();
+
+            let resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            data.ranked_results.forEach(video => {
+                let videoElement = `
+                    <div class="video">
+                        <h3>${video.title} - ${video.artist}</h3>
+                        <p>Views: ${video.views} | Likes: ${video.likes}</p>
+                        <iframe width="300" height="200" src="${video.video_url.replace('watch?v=', 'embed/')}" allowfullscreen></iframe>
+                    </div>
+                `;
+                resultsDiv.innerHTML += videoElement;
+            });
+        }
+    </script>
+
+</body>
+</html>
